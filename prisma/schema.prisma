@@ -1,0 +1,213 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("TURSO_DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Tenant {
+  id                 String              @id @default(uuid())
+  name               String
+  plan               String              @default("free")
+  planId             String?
+  status             String              @default("active")
+  taxRate            Float               @default(10.0)
+  currency           String              @default("$")
+  logo               String?
+  address            String?
+  createdAt          DateTime            @default(now())
+  phone              String?
+  categories         Category[]
+  customers          Customer[]
+  expenses           Expense[]
+  fulfillmentOptions FulfillmentOption[]
+  orders             Order[]
+  orderItems         OrderItem[]
+  paymentMethods     PaymentMethod[]
+  menuItems          MenuItem[]
+  planObj            Plan?               @relation(fields: [planId], references: [id])
+  transfers          Transfer[]
+  users              User[]
+  roles              Role[]
+  employees          Employee[]
+  wagePayments       WagePayment[]
+}
+
+model Plan {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  maxUsers    Int      @default(5)
+  maxOrders   Int      @default(1000)
+  description String?
+  price       Float    @default(0)
+  createdAt   DateTime @default(now())
+  tenants     Tenant[]
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  modules     String   // stringified JSON array
+  createdAt   DateTime @default(now())
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  users       User[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  tenantId  String?
+  roleId    String?
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("cashier")
+  createdAt DateTime @default(now())
+  orders         Order[]
+  tenant         Tenant?  @relation(fields: [tenantId], references: [id])
+  customRole Role?   @relation(fields: [roleId], references: [id])
+}
+
+model Customer {
+  id       String  @id @default(uuid())
+  tenantId String
+  name     String
+  phone    String?
+  notes    String?
+  address  String?
+  email    String?
+  tenant   Tenant  @relation(fields: [tenantId], references: [id])
+  orders   Order[]
+}
+
+model MenuItem {
+  id         String      @id @default(uuid())
+  tenantId   String
+  name       String
+  category   String      @default("Main Course")
+  icon       String?
+  priceType  String      @default("item")
+  price      Float
+  image      String?
+  orderItems OrderItem[]
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  tenantId      String
+  orderNumber   String
+  customerId    String
+  userId        String?
+  assignedToId  String?
+  status        String      @default("PENDING")
+  paymentMethod String      @default("CASH")
+  totalPrice    Float
+  paidAmount    Float       @default(0)
+  dueAmount     Float
+  notes         String?
+  fulfillment   String      @default("DINE_IN")
+  deliveryFee   Float       @default(0)
+  tableNumber   String?
+  scheduledDate DateTime?
+  createdAt     DateTime    @default(now())
+  user          User?       @relation(fields: [userId], references: [id])
+  assignedTo    Employee?   @relation("AssignedEmployee", fields: [assignedToId], references: [id])
+  customer      Customer    @relation(fields: [customerId], references: [id])
+  tenant        Tenant      @relation(fields: [tenantId], references: [id])
+  orderItems    OrderItem[]
+}
+
+model OrderItem {
+  id         String    @id @default(uuid())
+  tenantId   String
+  orderId    String
+  menuItemId String?
+  serviceId  String?
+  quantity   Int
+  price      Float
+  subtotal   Float
+  menuItem   MenuItem? @relation(fields: [menuItemId], references: [id])
+  order      Order     @relation(fields: [orderId], references: [id])
+  tenant     Tenant    @relation(fields: [tenantId], references: [id])
+}
+
+model Category {
+  id       String @id @default(uuid())
+  tenantId String
+  name     String
+  emoji    String @default("📁")
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+}
+
+model FulfillmentOption {
+  id         String @id @default(uuid())
+  tenantId   String
+  name       String
+  defaultFee Float  @default(0)
+  tenant     Tenant @relation(fields: [tenantId], references: [id])
+}
+
+model Expense {
+  id            String   @id @default(uuid())
+  tenantId      String
+  amount        Float
+  category      String   @default("General")
+  paymentMethod String   @default("Cash")
+  description   String?
+  date          DateTime @default(now())
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+model PaymentMethod {
+  id        String  @id @default(uuid())
+  tenantId  String
+  name      String
+  isDefault Boolean @default(false)
+  tenant    Tenant  @relation(fields: [tenantId], references: [id])
+}
+
+model Transfer {
+  id         String   @id @default(uuid())
+  tenantId   String
+  fromMethod String
+  toMethod   String
+  amount     Float
+  date       DateTime @default(now())
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+model Employee {
+  id         String   @id @default(uuid())
+  tenantId   String
+  name       String
+  phone      String?
+  role       String   @default("Waiter")
+  status     String   @default("Active")
+  wageType   String   @default("Monthly")
+  wageAmount Float    @default(0)
+  cvUrl      String?
+  idUrl      String?
+  createdAt  DateTime @default(now())
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  assignedJobs Order[] @relation("AssignedEmployee")
+  wagePayments WagePayment[]
+}
+
+model WagePayment {
+  id          String   @id @default(uuid())
+  tenantId    String
+  employeeId  String
+  amount      Float
+  date        DateTime @default(now())
+  notes       String?
+  createdAt   DateTime @default(now())
+  
+  employee    Employee @relation(fields: [employeeId], references: [id])
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+}

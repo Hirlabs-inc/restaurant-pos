@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cleaning-pos:latest
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=file:/data/prod.db
+      - UPLOAD_DIR=/uploads
+      - NODE_ENV=production
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - AUTH_TRUST_HOST=true
+    volumes:
+      - laundry_db:/data
+      - laundry_uploads:/uploads
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  laundry_db:
+  laundry_uploads:

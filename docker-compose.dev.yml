@@ -1,0 +1,17 @@
+# Local development override
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: laundry-pos:local
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "file:/data/dev.db"
+      NODE_ENV: development
+    volumes:
+      - laundry_db_dev:/data
+
+volumes:
+  laundry_db_dev:

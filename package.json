@@ -1,0 +1,42 @@
+{
+  "name": "restaurant-pos",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "prebuild": "prisma generate",
+    "build": "next build",
+    "postbuild": "node postbuild.js",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@ducanh2912/next-pwa": "^10.2.9",
+    "@libsql/client": "^0.17.3",
+    "@netlify/plugin-nextjs": "^5.15.11",
+    "@phosphor-icons/react": "^2.1.10",
+    "@prisma/adapter-libsql": "^6.4.0",
+    "@prisma/client": "6.4.0",
+    "@types/bcryptjs": "^2.4.6",
+    "ajv": "^8.20.0",
+    "bcryptjs": "^3.0.3",
+    "next": "16.2.4",
+    "next-auth": "^5.0.0-beta.31",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "turso": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "netlify-cli": "^26.1.0",
+    "prisma": "6.4.0",
+    "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
