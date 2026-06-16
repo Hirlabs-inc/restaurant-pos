@@ -25,7 +25,7 @@ async function getActiveTenantId(user: any): Promise<string> {
       tId = dbUser.tenantId;
     }
   }
-  if (!tId) throw new Error('No store assigned.');
+  if (!tId && user.role !== 'superadmin') throw new Error('No store assigned.');
   return tId;
 }
 
@@ -320,7 +320,7 @@ export async function updateMenuItemAction(id: string, formData: FormData) {
   try {
     const session = await auth();
     const user = session?.user as any;
-    if (!user || !user.tenantId) throw new Error('No store assigned.');
+    if (!user || (!user.tenantId && user.role !== 'superadmin')) throw new Error('No store assigned.');
     
     await requireAdmin();
 
@@ -389,7 +389,7 @@ export async function updateStoreAction(formData: FormData) {
         tId = dbUser.tenantId;
       }
     }
-    if (!tId) throw new Error('No store assigned.');
+    if (!tId && user.role !== 'superadmin') throw new Error('No store assigned.');
 
     const name = formData.get('name') as string
     const taxRate = parseFloat(formData.get('taxRate') as string)
@@ -447,7 +447,7 @@ export async function createFulfillmentOptionAction(formData: FormData) {
   try {
     const session = await auth();
     const user = session?.user as any;
-    if (!user || !user.tenantId) throw new Error('No store assigned.');
+    if (!user || (!user.tenantId && user.role !== 'superadmin')) throw new Error('No store assigned.');
     const tId = user.tenantId;
 
     const name = formData.get('name') as string
@@ -494,7 +494,7 @@ export async function createExpenseAction(formData: FormData) {
   try {
     const session = await auth();
     const user = session?.user as any;
-    if (!user || !user.tenantId) throw new Error('No store assigned.');
+    if (!user || (!user.tenantId && user.role !== 'superadmin')) throw new Error('No store assigned.');
     const tId = user.tenantId;
 
     const amount = parseFloat(formData.get('amount') as string)
@@ -529,7 +529,7 @@ export async function createPaymentMethodAction(formData: FormData) {
   try {
     const session = await auth();
     const user = session?.user as any;
-    if (!user || !user.tenantId) throw new Error('No store assigned.');
+    if (!user || (!user.tenantId && user.role !== 'superadmin')) throw new Error('No store assigned.');
     const tId = user.tenantId;
     const name = formData.get('name') as string
     if (!name.trim()) return { success: false, error: 'Name is required' }
@@ -559,7 +559,7 @@ export async function createTransferAction(formData: FormData) {
   try {
     const session = await auth();
     const user = session?.user as any;
-    if (!user || !user.tenantId) throw new Error('No store assigned.');
+    if (!user || (!user.tenantId && user.role !== 'superadmin')) throw new Error('No store assigned.');
     const tId = user.tenantId;
     
     const fromMethod = formData.get('fromMethod') as string

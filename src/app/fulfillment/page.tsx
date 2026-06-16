@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export default async function FulfillmentPage() {
   const session = await auth()
   const user = session?.user as any
-  if (!user || !user.tenantId) return <div>No store assigned.</div>
+  if (!user || (!user.tenantId && user.role !== 'superadmin')) return <div>No store assigned.</div>
   const tId = user.tenantId
 
   const tenant = await prisma.tenant.findUnique({ where: { id: tId } });

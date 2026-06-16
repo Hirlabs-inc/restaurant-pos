@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export default async function SettingsPage() {
   const session = await auth()
   const user = session?.user as any
-  if (!user || !user.tenantId) return <div>No store assigned.</div>
+  if (!user || (!user.tenantId && user.role !== 'superadmin')) return <div>No store assigned.</div>
   const tId = user.tenantId
 
   const tenants = await prisma.$queryRaw<any[]>`SELECT * FROM Tenant WHERE id = ${tId} LIMIT 1`;
