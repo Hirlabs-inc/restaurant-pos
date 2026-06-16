@@ -318,7 +318,7 @@ export default function POSClient({
                       </div>
                     )}
 
-                    <div className="card-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', color: 'var(--text-muted)' }}>🍽️</div>
+                    <div className="card-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', color: 'var(--text-muted)' }}>{item.icon || '🍽️'}</div>
                     <div className="card-title">{item.name}</div>
                     <div className="card-category">{item.category}</div>
                     <div className="card-footer">
@@ -599,7 +599,7 @@ export default function POSClient({
             cart.map(item => (
               <div key={item.id} className="order-item">
                 <div className="item-qty">x{item.qty}</div>
-                <img src={item.icon || '/pizza.png'} alt={item.name} className="item-img-small" />
+                <div className="item-img-small" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>{item.icon || '🍽️'}</div>
                 <div className="item-info">
                   <div className="item-info-title">{item.name}</div>
                 </div>
