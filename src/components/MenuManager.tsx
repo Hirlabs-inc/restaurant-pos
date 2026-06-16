@@ -7,7 +7,8 @@ import {
   deleteMenuItemAction,
   deleteCategoryAction,
 } from '../app/actions';
-import { Tag, Folder, PencilSimple, Trash, Warning } from '@phosphor-icons/react';
+import { Tag, Folder, PencilSimple, Trash, Warning, ForkKnife, Pizza, Hamburger, BeerStein, Cake, Bread, Coffee, BowlFood, BowlSteam, Popcorn, IceCream } from '@phosphor-icons/react';
+import MenuItemIcon from './MenuItemIcon';
 
 const EMOJI_OPTIONS = ['🥗','🍕','🍹','🍰','🍔','🍝','🍣','🥪','🥞','🍦','☕','🍷'];
 const CATEGORY_COLORS: Record<string, string> = {
@@ -195,7 +196,7 @@ export default function MenuManager({
                     height: '100px', background: 'var(--bg-main)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden'
                   }}>
-                    <span style={{ fontSize: '40px' }}>{s.icon || '🍽️'}</span>
+                    <MenuItemIcon name={s.icon} size={40} />
                   </div>
 
                   {/* Card body */}
@@ -393,15 +394,20 @@ export default function MenuManager({
                   Icon
                 </label>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {['🍽️','🥗','🍕','🍹','🍰','🍔','🍝','🍣','🥪','🥞','🍦','☕','🍷','🥩','🌮','🥗'].map(emoji => (
-                    <label key={emoji} style={{ cursor: 'pointer', fontSize: '24px' }}>
-                      <input type="radio" name="icon" value={emoji} defaultChecked={editingItem?.icon === emoji || (!editingItem?.icon && emoji === '🍽️')} style={{ display: 'none' }} />
+                  {[
+                    'ForkKnife', 'Pizza', 'Hamburger', 'BeerStein', 'Cake',
+                    'Bread', 'Coffee', 'BowlFood', 'BowlSteam', 'Popcorn', 'IceCream'
+                  ].map(iconName => (
+                    <label key={iconName} style={{ cursor: 'pointer', fontSize: '24px' }}>
+                      <input type="radio" name="icon" value={iconName} defaultChecked={editingItem?.icon === iconName || (!editingItem?.icon && iconName === 'ForkKnife')} style={{ display: 'none' }} />
                       <span style={{
-                        display: 'inline-block', padding: '6px', borderRadius: '8px',
-                        border: '2px solid transparent',
+                        display: 'inline-flex', padding: '6px', borderRadius: '8px',
+                        border: '2px solid transparent', alignItems: 'center', justifyContent: 'center',
                         transition: 'border-color 0.15s',
                       }} onMouseEnter={e => (e.currentTarget as HTMLSpanElement).style.borderColor = 'var(--border-dark)'}
-                         onMouseLeave={e => (e.currentTarget as HTMLSpanElement).style.borderColor = 'transparent'}>{emoji}</span>
+                         onMouseLeave={e => (e.currentTarget as HTMLSpanElement).style.borderColor = 'transparent'}>
+                        <MenuItemIcon name={iconName} size={24} />
+                      </span>
                     </label>
                   ))}
                 </div>

@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { createOrder, createCustomerAction, deleteOrderAction } from '../app/actions';
 import { MagnifyingGlass, UserPlus, Check, Money, CreditCard, Clock, Warning, Basket, Printer, Trash, Tag } from '@phosphor-icons/react';
 import ReceiptModal from './ReceiptModal';
+import MenuItemIcon from './MenuItemIcon';
 
 type Customer = { id: string; name: string; phone: string | null };
 
@@ -318,7 +319,7 @@ export default function POSClient({
                       </div>
                     )}
 
-                    <div className="card-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', color: 'var(--text-muted)' }}>{item.icon || '🍽️'}</div>
+                    <div className="card-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', color: 'var(--text-muted)' }}><MenuItemIcon name={item.icon} size={48} /></div>
                     <div className="card-title">{item.name}</div>
                     <div className="card-category">{item.category}</div>
                     <div className="card-footer">
@@ -599,7 +600,7 @@ export default function POSClient({
             cart.map(item => (
               <div key={item.id} className="order-item">
                 <div className="item-qty">x{item.qty}</div>
-                <div className="item-img-small" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>{item.icon || '🍽️'}</div>
+                <div className="item-img-small" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}><MenuItemIcon name={item.icon} size={24} /></div>
                 <div className="item-info">
                   <div className="item-info-title">{item.name}</div>
                 </div>
