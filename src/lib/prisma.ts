@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client/wasm'
 import { PrismaLibSQL } from '@prisma/adapter-libsql'
-import { createClient } from '@libsql/client'
+import { createClient } from '@libsql/client/web'
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
 function createPrismaClient(): PrismaClient {
   const tursoUrl = process.env.TURSO_DATABASE_URL
@@ -20,11 +20,20 @@ function createPrismaClient(): PrismaClient {
   return new PrismaClient({ adapter })
 }
 
-const prisma = globalForPrisma.prisma ?? createPrismaClient()
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma
+function getPrismaClient(): PrismaClient {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient()
+  }
+  return globalForPrisma.prisma
 }
+
+const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getPrismaClient()
+    const value = (client as unknown as Record<string | symbol, unknown>)[prop]
+    return typeof value === 'function' ? value.bind(client) : value
+  },
+})
 
 export { prisma }
 export default prisma
