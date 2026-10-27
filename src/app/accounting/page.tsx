@@ -1,12 +1,14 @@
 import prisma from '@/lib/prisma';
 import AccountingManager from '@/components/AccountingManager';
 import { auth } from '../../../auth';
+import { redirect } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
 export default async function AccountingPage() {
   const session = await auth()
   const user = session?.user as any
-  if (!user || (!user.tenantId && user.role !== 'superadmin')) return <div>No store assigned.</div>
+  if (!user) return redirect('/login')
+  if (!user.tenantId && user.role !== 'superadmin') return <div>No store assigned.</div>
   const tId = user.tenantId
 
   // Total Revenue comes from all paid amounts across all orders

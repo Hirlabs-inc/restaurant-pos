@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma'
 import { auth } from '../../../auth'
+import { redirect } from 'next/navigation'
 import { AssignJobWidget } from '../../components/AssignJobWidget'
 import { CompleteJobWidget } from '../../components/CompleteJobWidget'
 import { CurrencyDollar, ShoppingCart, Calendar, Users, Wallet, Coins, CreditCard, TrendUp, TrendDown } from '@phosphor-icons/react/dist/ssr'
@@ -12,7 +13,8 @@ function formatCurrency(n: number, curr: string) {
 export default async function DashboardPage() {
   const session = await auth()
   const user = session?.user as any
-  if (!user || (!user.tenantId && user.role !== 'superadmin')) return <div>No store assigned.</div>
+  if (!user) return redirect('/login')
+  if (!user.tenantId && user.role !== 'superadmin') return <div>No store assigned.</div>
   const tId = user.tenantId
 
   const now = new Date()

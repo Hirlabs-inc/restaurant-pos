@@ -1,12 +1,14 @@
 import prisma from '@/lib/prisma';
 import FulfillmentManager from '@/components/FulfillmentManager';
 import { auth } from '../../../auth';
+import { redirect } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
 export default async function FulfillmentPage() {
   const session = await auth()
   const user = session?.user as any
-  if (!user || (!user.tenantId && user.role !== 'superadmin')) return <div>No store assigned.</div>
+  if (!user) return redirect('/login')
+  if (!user.tenantId && user.role !== 'superadmin') return <div>No store assigned.</div>
   const tId = user.tenantId
 
   const tenant = await prisma.tenant.findUnique({ where: { id: tId } });

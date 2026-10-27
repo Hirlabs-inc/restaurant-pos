@@ -2,13 +2,15 @@ import prisma from '@/lib/prisma';
 import UpdateStoreForm from '@/components/UpdateStoreForm';
 import PaymentMethodManager from '@/components/PaymentMethodManager';
 import { auth } from '../../../auth';
+import { redirect } from 'next/navigation';
 import { UsersThree, Shield, Database } from '@phosphor-icons/react/dist/ssr';
 export const dynamic = 'force-dynamic';
 
 export default async function SettingsPage() {
   const session = await auth()
   const user = session?.user as any
-  if (!user || (!user.tenantId && user.role !== 'superadmin')) return <div>No store assigned.</div>
+  if (!user) return redirect('/login')
+  if (!user.tenantId && user.role !== 'superadmin') return <div>No store assigned.</div>
   const tId = user.tenantId
 
   const tenants = await prisma.$queryRaw<any[]>`SELECT * FROM Tenant WHERE id = ${tId} LIMIT 1`;

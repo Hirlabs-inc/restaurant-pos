@@ -1,11 +1,14 @@
 import prisma from '@/lib/prisma'
 import { auth } from '../../../../auth'
 import UserManagerClient from '@/components/UserManagerClient'
+import { redirect } from 'next/navigation'
 export const dynamic = 'force-dynamic'
 
 export default async function UsersSettingsPage() {
   const session = await auth()
   const me = session?.user as any
+  if (!me) redirect('/login')
+  if (me.role !== 'admin') redirect('/')
 
   const users = await prisma.user.findMany({
     where: { tenantId: me?.tenantId },
