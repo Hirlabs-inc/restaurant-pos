@@ -3,10 +3,8 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { Eye, EyeClosed } from '@phosphor-icons/react'
-import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -33,8 +31,7 @@ export default function LoginPage() {
         setError(res.error === 'Configuration' ? 'Store suspended, contact system admin' : res.error)
       }
     } else {
-      router.push('/')
-      router.refresh()
+      window.location.assign('/')
     }
   }
 
