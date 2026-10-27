@@ -1,8 +1,7 @@
+import { cache } from 'react'
 import { PrismaClient } from '@prisma/client/wasm'
 import { PrismaLibSQL } from '@prisma/adapter-libsql'
 import { createClient } from '@libsql/client/web'
-
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
 function createPrismaClient(): PrismaClient {
   const tursoUrl = process.env.TURSO_DATABASE_URL
@@ -20,12 +19,10 @@ function createPrismaClient(): PrismaClient {
   return new PrismaClient({ adapter })
 }
 
-function getPrismaClient(): PrismaClient {
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = createPrismaClient()
-  }
-  return globalForPrisma.prisma
-}
+// On Cloudflare Workers, I/O objects are bound to the request that created them.
+// Reusing a libsql/Prisma client across requests causes hung requests and 1101s,
+// so the client is memoized per request (React `cache`) rather than globally.
+const getPrismaClient = cache(createPrismaClient)
 
 const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop) {
